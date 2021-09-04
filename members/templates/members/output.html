@@ -1,0 +1,35 @@
+{% extends 'members/base.html' %}
+
+{% block content %}
+
+  <div class="container">
+      {% for member in members %}
+        <div class="tile">
+          <div class="col">
+            <div class="row">
+              <span class="names_title">{{member.name1}}</span>{% if member.byline %}<br><span class="byline">{{member.byline}}</span>{% endif %}{% if member.byline and member.name2 %}<br>{% endif %}{% if member.name2 %} <span class="names_title">and {{member.name2}}</span>{% endif %}{% if member.note %}<div class="note">{{member.note}}</div>{% endif %}
+            </div>
+            <div class="row">
+              {% if member.address1 != '' %}
+              <div class="">{{member.address1}}</div>
+              <div class="">{{member.address2}}</div>
+              <div class="">{{member.city}}, {{member.state}} {{member.postal_code}}</div>
+              {% endif %}
+            </div>
+            <div class="row">
+              <div class="">{{member.email1}}</div>
+              <div class="">{{member.email2}}</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="row">
+              <div class="">{% if member.phone_number1 %}<b>Phone Number(s)</b>: {{member.phone_number1}}{% endif %}{% if member.phone_number2 %}<br>{{member.phone_number2}}{% endif %}</div>
+              <div class=""><b>Status</b>: {{member.membership_status|title}} member</div>
+              <div class=""><b>Type</b>: {% if member.membership_type == 'PAM staff'%}{{member.membership_type}}{% else %}{{member.membership_type|title}}{% endif %} {% if member.membership_type == 'board' %}({{member.role|title}}){% endif %}</div>
+            </div>
+          </div>
+        </div>
+    {% endfor %}
+  </div>
+
+{% endblock %}

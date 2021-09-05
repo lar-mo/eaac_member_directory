@@ -7,17 +7,17 @@ def all_member_count(user):
 User.add_to_class('all_member_count', all_member_count)
 
 def board_member_count(user):
-    number_of_board_members = Member.objects.filter(membership_type='board').count()
+    number_of_board_members = Member.objects.filter(membership_type='Board Member').count()
     return number_of_board_members
 User.add_to_class('board_member_count', board_member_count)
 
 def active_member_count(user):
-    number_of_active_members = Member.objects.filter(membership_status='active').count()
+    number_of_active_members = Member.objects.filter(membership_status='Active').count()
     return number_of_active_members
 User.add_to_class('active_member_count', active_member_count)
 
 def inactive_member_count(user):
-    number_of_inactive_members = Member.objects.filter(membership_status='inactive').count()
+    number_of_inactive_members = Member.objects.filter(membership_status='Inactive').count()
     return number_of_inactive_members
 User.add_to_class('inactive_member_count', inactive_member_count)
 
@@ -41,32 +41,32 @@ class Member(models.Model):
     postal_code         = models.CharField(max_length=10, blank=True)
     email1              = models.CharField(max_length=200, blank=True)
     email2              = models.CharField(max_length=200, blank=True)
-    ACTIVE = 'active'
-    INACTIVE = 'inactive'
+    ACTIVE = 'Active'
+    INACTIVE = 'Inactive'
     MEMBERSHIP_STATUS_CHOICES = [
-        (ACTIVE, 'active'),
-        (INACTIVE, 'inactive'),
+        (ACTIVE, 'Active'),
+        (INACTIVE, 'Inactive'),
     ]
     membership_status = models.CharField(
-        max_length=10,
+        max_length=20,
         choices=MEMBERSHIP_STATUS_CHOICES,
         default=ACTIVE,
         blank=True,
     )
-    SUPPORTER = 'supporter'
-    VOLUNTEER = 'volunteer'
-    HONORARY = 'honorary'
+    SUPPORTER = 'Supporter'
+    VOLUNTEER = 'Volunteer'
+    HONORARY = 'Honorary'
     PAM_STAFF = 'PAM staff'
-    BOARD = 'board'
+    BOARD = 'Board Member'
     MEMBER_TYPE_CHOICES = [
-        (SUPPORTER, 'supporter'),
-        (VOLUNTEER, 'volunteer'),
-        (HONORARY, 'honorary'),
+        (SUPPORTER, 'Supporter'),
+        (VOLUNTEER, 'Volunteer'),
+        (HONORARY, 'Honorary'),
         (PAM_STAFF, 'PAM staff'),
-        (BOARD, 'board'),
+        (BOARD, 'Board Member'),
     ]
     membership_type = models.CharField(
-        max_length=10,
+        max_length=20,
         choices=MEMBER_TYPE_CHOICES,
         default=SUPPORTER,
         blank=True,

@@ -16,6 +16,9 @@
         <td class="members_list_header">Membership Status</td>
         <td class="members_list_header">Type</td>
         <td class="members_list_header">Role</td>
+        <td class="members_list_header">Directory Opt-Out</td>
+        <td class="members_list_header">Needs Review</td>
+        <td class="members_list_header">Reason for Review</td>
       </tr>
       {% for member in members %}
       <tr>
@@ -31,6 +34,9 @@
         <td class="members_list_value">{{member.membership_status|title}}</td>
         <td class="members_list_value">{{member.membership_type|title}}</td>
         <td class="members_list_value">{{member.role|title}}</td>
+        <td class="members_list_value">{% if member.directory_optout %}<i class="bi bi-check"></i>{% endif %}</td>
+        <td class="members_list_value checkmark_bool_grid">{% if member.needs_review %}<i class="bi bi-check"></i>{% endif %}</td>
+        <td class="members_list_value">{{member.reason_for_review|title}}</td>
       </tr>
       {% endfor %}
     </table>

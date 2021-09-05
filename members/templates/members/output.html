@@ -3,17 +3,21 @@
 {% block content %}
 
   <div class="container">
+    {% if message == "changes_saved" %}
+      <span class="message">Success! Your changes were saved.</span>
+    {% endif %}
       {% for member in members %}
         <div class="tile">
           {% url 'members_app:needs_review' as needs_review_url %}
           {% if request.path == needs_review_url %}
           <div class="needs_review"><b>Needs Review</b>:<br><i>{{member.reason_for_review|title}}</i>
-            <div class="edit_link"><a href="/members/edit_member_info/{{member.id}}/">Edit</a></div>
+            <!-- <div class="edit_link"><a href="/members/edit_member_info/{{member.id}}/">Edit</a></div> -->
+            <div class="edit_link"><a href="{% url 'members_app:edit_member_info' member.id %}">Edit</a></div>
           </div>
           {% endif %}
           <div class="col_ro">
             <div class="row">
-              <span class="names_title">{{member.name1}}</span>{% if member.byline %}<br><span class="byline">{{member.byline}}</span>{% endif %}{% if member.byline and member.name2 %}<br>{% endif %}{% if member.name2 %} <span class="names_title">and {{member.name2}}</span>{% endif %}{% if member.note %}<div class="note">{{member.note}}</div>{% endif %}
+              <span class="names_title">{{member.name1}}{% if member.byline %}<br><span class="byline">{{member.byline}}</span>{% endif %}{% if member.byline and member.name2 %}<br>{% endif %}{% if member.name2 %} and {{member.name2}}{% endif %}{% if member.note %}<div class="note">{{member.note}}</div>{% endif %}
             </div>
             <div class="row">
               {% if member.address1 != '' %}
@@ -31,9 +35,13 @@
             <div class="row">
               <div class="">{% if member.phone_number1 %}<b>Phone #</b>: {{member.phone_number1}}{% endif %}{% if member.phone_number2 %}, {{member.phone_number2}}{% endif %}</div>
               <div class="{% if member.membership_status == 'inactive' %}red_label{% endif %}"><b>Status</b>: {{member.membership_status|title}} member</div>
-              <div class=""><b>Type</b>: {% if member.membership_type == 'PAM staff'%}{{member.membership_type}}{% else %}{{member.membership_type|title}}{% endif %} {% if member.membership_type == 'board' %}({{member.role|title}}){% endif %}</div>
+              <div class=""><b>Type</b>: {% if member.membership_type == 'PAM staff'%}{{member.membership_type}}{% else %}{{member.membership_type|title}}{% endif %} {% if member.membership_type == 'Board Member' %}({{member.role|title}}){% endif %}</div>
             </div>
           </div>
+          {% url 'members_app:needs_review' as needs_review_url %}
+          {% if request.path != needs_review_url %}
+          <span><a href="{% url 'members_app:edit_member_info' member.id %}">edit</a></span>
+          {% endif %}
         </div>
     {% endfor %}
   </div>

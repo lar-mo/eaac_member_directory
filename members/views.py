@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, reverse
 from django.contrib.auth.decorators import login_required
 
@@ -9,7 +9,7 @@ from .forms import EditMemberInfo
 #     return HttpResponse("Hello world!")
 
 @login_required
-def index(request):
+def list_all(request):
     members = Member.objects.all()
     context = {
     'members': members,
@@ -17,7 +17,7 @@ def index(request):
     return render(request, 'members/output.html', context)
 
 @login_required
-def list_members_grid(request):
+def list_all_grid(request):
     members = Member.objects.all()
     context = {
     'members': members,
@@ -26,7 +26,7 @@ def list_members_grid(request):
 
 @login_required
 def list_board(request):
-    members = Member.objects.filter(membership_type='board')
+    members = Member.objects.filter(membership_type='Board Member')
     context = {
     'members': members,
     }
@@ -36,10 +36,10 @@ def list_board(request):
 def list_active(request):
     # name1.split(' ')[-1]
     # REGEX \b(\w+)$
-    members = Member.objects.filter(membership_status='active')
+    members = Member.objects.filter(membership_status='Active')
     # members = Member.objects.filter(membership_status='active').order_by('name1')
     # members = Member.objects.filter(membership_status='active').extra(select={'lname1' : "SUBSTR(name1, -1 ,)"}).order_by('lname1')
-    print(members)
+    # print(members)
     context = {
     'members': members,
     }
@@ -47,7 +47,7 @@ def list_active(request):
 
 @login_required
 def list_inactive(request):
-    members = Member.objects.filter(membership_status='inactive')
+    members = Member.objects.filter(membership_status='Inactive')
     context = {
     'members': members,
     }
@@ -71,18 +71,53 @@ def search_results(request):
     return render(request, 'members/output.html', context)
 
 @login_required
+def show_member_info(request, member_id):
+    message = request.GET.get('message', '')
+    member = Member.objects.filter(id=member_id)
+    context = {
+    'members': member,
+    'message': message,
+    }
+    return render(request, 'members/output.html', context)
+
+@login_required
 def edit_member_info(request, member_id):
-    print(member_id)
+    # print(member_id)
     form = EditMemberInfo()
     member = Member.objects.get(id=member_id)
     context = {'member': member, 'form': form}
     return render(request, 'members/edit_member_info.html', context)
 
 def save_member_info(request):
-    # user_info = Member.objects.get(id=request.user.id)
-    # user_info.first_name = request.POST['first_name'].strip()
-    # user_info.last_name = request.POST['last_name'].strip()
-    # user_info.email = request.POST['email'].strip()
-    # user_info.save()
+    member_id = request.POST['member_id']
+    # print(request.POST)
+    member_info = Member.objects.get(id=member_id)
+    member_info.name1 = request.POST['name1'].strip()
+    member_info.sort_by = request.POST['sort_by'].strip()
+    member_info.byline = request.POST['byline'].strip()
+    member_info.name2 = request.POST['name2'].strip()
+    member_info.note = request.POST['note'].strip()
+    member_info.address1 = request.POST['address1'].strip()
+    member_info.address2 = request.POST['address2'].strip()
+    member_info.city = request.POST['city'].strip()
+    member_info.state = request.POST['state'].strip()
+    member_info.postal_code = request.POST['postal_code'].strip()
+    member_info.email1 = request.POST['email1'].strip()
+    member_info.email2 = request.POST['email2'].strip()
+    member_info.phone_number1 = request.POST['phone_number1'].strip()
+    member_info.phone_number2 = request.POST['phone_number2'].strip()
+    member_info.membership_status = request.POST['membership_status']
+    member_info.membership_type = request.POST['membership_type']
+    member_info.role = request.POST['role'].strip()
+    try:
+        member_info.directory_optout = request.POST['directory_optout']
+    except:
+        pass
+    try:
+        member_info.needs_review = request.POST['needs_review']
+    except:
+        pass
+    member_info.reason_for_review = request.POST['reason_for_review'].strip()
+    member_info.save()
 
-    return HttpResponseRedirect(reverse('members_app:index')+'?message=info_saved')
+    return HttpResponseRedirect(reverse('members_app:show_member_info', kwargs={'member_id':member_id})+'?message=changes_saved')

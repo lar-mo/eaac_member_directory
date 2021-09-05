@@ -21,9 +21,14 @@ def inactive_member_count(user):
     return number_of_inactive_members
 User.add_to_class('inactive_member_count', inactive_member_count)
 
+def needs_review_count(user):
+    number_of_needs_review = Member.objects.filter(needs_review=1).count()
+    return number_of_needs_review
+User.add_to_class('needs_review_count', needs_review_count)
+
 class Member(models.Model):
     name1               = models.CharField(max_length=100)
-    sortby              = models.CharField(max_length=100)
+    sort_by             = models.CharField(max_length=100)
     byline              = models.CharField(max_length=200, blank=True)
     name2               = models.CharField(max_length=100, blank=True)
     note                = models.CharField(max_length=100, blank=True)
@@ -71,8 +76,11 @@ class Member(models.Model):
     needs_review        = models.BooleanField(default=False)
     reason_for_review   = models.CharField(max_length=200, blank=True)
 
+    class Meta:
+        ordering = ['sort_by',]
+
     def __str__(self):
-        output = self.fname1 + " " + self.lname1
+        output = self.name1
         if self.name2 != '':
             output += ' and ' + self.name2
         return output

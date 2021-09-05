@@ -1,0 +1,126 @@
+{% extends 'members/base.html' %}
+
+{% block content %}
+
+  <div class="container">
+    <h3>Edit Member Information</h3>
+        <div class="tile edit_form_align">
+          <div class="col_rw">
+            <div class="row">
+              <div class="form_fields">
+                <label for="name1">Name 1:</label>
+                <input type="text" id="name1" name="name1" value='{{member.name1}}'>
+              </div>
+              <div class="form_fields">
+                <label for="sort_by">Sort By:</label>
+                <input type="text" id="sort_by" name="sort_by" value='{{member.sort_by}}'>
+              </div>
+              <div class="form_fields">
+                <label for="byline">Byline:</label>
+                <input type="text" id="byline" name="byline" value='{{member.byline}}'>
+              </div>
+              <div class="form_fields">
+                <label for="name2">Name 2:</label>
+                <input type="text" id="name2" name="name2" value='{{member.name2}}'>
+              </div>
+              <div class="form_fields">
+                <label for="postal_code">Address 1:</label>
+                <input type="text" id="address1" name="address1" value='{{member.address1}}'>
+              </div>
+              <div class="form_fields">
+                <label for="address2">Address 2:</label>
+                <input type="text" id="address2" name="address2" value='{{member.address2}}'>
+              </div>
+              <div class="form_fields">
+                <label for="city">City:</label>
+                <input type="text" id="city" name="city" value='{{member.city}}'>
+              </div>
+              <div class="form_fields">
+                <label for="state">State:</label>
+                <input type="text" id="state" name="state" value='{{member.state}}'>
+              </div>
+              <div class="form_fields">
+                <label for="postal_code">Postal Code:</label>
+                <input type="text" id="postal_code" name="postal_code" value='{{member.postal_code}}'>
+              </div>
+              <div class="form_fields">
+                <label for="email1">Email 1:</label>
+                <input type="text" id="email1" name="email1" value='{{member.email1}}'>
+              </div>
+              <div class="form_fields">
+                <label for="email2">Email 2:</label>
+                <input type="text" id="email2" name="email2" value='{{member.email2}}'>
+              </div>
+            </div>
+          </div>
+          <div class="col_rw">
+            <div class="row">
+              <div class="form_fields">
+                <label for="phone_number1">Phone 1:</label>
+                <input type="text" id="phone_number1" name="phone_number1" value='{{member.phone_number1}}'>
+              </div>
+              <div class="form_fields">
+                <label for="phone_number2">Phone 2:</label>
+                <input type="text" id="phone_number2" name="phone_number2" value='{{member.phone_number2}}'>
+              </div>
+              <div class="form_fields">
+                <label for="membership_status">Member Status:</label>
+                <select id="membership_status" name="membership_status" value='{{member.membership_status}}'>
+                  <option>active</option>
+                  <option>inactive</option>
+                </select>
+              </div>
+              <div class="form_fields">
+                <label for="membership_type">Member Type:</label>
+                <select id="membership_type" name="membership_type" value='{{member.membership_type}}'>
+                  <option>supporter</option>
+                  <option>volunteer</option>
+                  <option>honorary</option>
+                  <option>PAM staff</option>
+                  <option>board</option>
+                </select>
+              </div>
+              <div class="form_fields">
+                <label for="role">Board Role, if applicable:</label>
+                <input type="text" id="role" name="role" value='{{member.role}}'>
+              </div>
+              <div class="form_fields">
+                <label for="directory_optout">Directory Opt-out:</label>
+                <input type="checkbox" id="directory_optout" name="directory_optout" value='{{member.directory_optout}}'>
+              </div>
+              <div class="form_fields">
+                <label for="needs_review">Needs Review:</label>
+                <input type="checkbox" id="needs_review" name="needs_review" value='{{member.needs_review}}'>
+              </div>
+              <div class="form_fields">
+                <label for="reason_for_review">Needs Review Reason:</label>
+                <input type="text" id="reason_for_review" name="reason_for_review" value='{{member.reason_for_review}}'> <a href="#" id="clear_reason_lnk">clear</a>
+              </div>
+            </div>
+            <hr>
+            <button type="submit" class="" id="save_changes_btn"><b>Save Changes</b></button>&nbsp;&nbsp;&nbsp;
+            <a href="#">cancel</a>
+          </div>
+        </div>
+  </div>
+
+  <script type="text/javascript">
+    save_changes_btn = document.querySelector('#save_changes_btn')
+    q = document.querySelector('#q')
+    search_btn.onclick = function() {
+      window.location="{% url 'members_app:save_member_info' %}"
+    }
+    // q.addEventListener("keydown", function (event) { // listen for  key presses
+    //     if (event.keyCode === 13) {                                 // '13' is the Enter/Return key
+    //         search_btn.click()                                      // emulate button click
+    //     }
+    // })
+
+    let clear_reason_lnk = document.querySelector('#clear_reason_lnk');
+    let reason_for_review = document.querySelector('#reason_for_review');
+    clear_reason_lnk.onclick = function () {
+      reason_for_review.value = '';
+    }
+  </script>
+
+{% endblock %}

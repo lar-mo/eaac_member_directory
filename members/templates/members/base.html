@@ -65,8 +65,11 @@
       .row {
         padding-right: 20px;
       }
-      .col {
-        width: 420px;
+      .col_ro {
+        width: 400px;
+      }
+      .col_rw {
+        width: 640px;
       }
       .container > * {
         padding: 10px;
@@ -75,16 +78,43 @@
         margin: 10px 0;
         width: 400px;
       }
+      .red_label {
+        color: red;
+      }
+      .needs_review {
+        width: 220px;
+      }
+      .edit_link {
+        margin: 10px 50px;
+        color: blue;
+        text-decoration: underline;
+      }
+      label {
+        display: block;
+        width: 230px;
+        float: left;
+        font-weight: bold;
+      }
+      .form_fields > input,
+      .form_fields > select {
+        width: 300px;
+        margin-bottom: 10px;
+      }
+      h3 {
+        background-color: #fff;
+        margin: 0 auto;
+      }
     </style>
   </head>
     <body>
       <main>
         <h1>EAAC Members</h1>
         <div class="filter_members">Show:
-          <input type="radio" name="filter_members" id="show_all"> All Members ({{user.all_member_count}})
-          <input type="radio" name="filter_members" id="show_board"> Board Members ({{user.board_member_count}})
-          <input type="radio" name="filter_members" id="show_active"> Active Members ({{user.active_member_count}})
-          <input type="radio" name="filter_members" id="show_inactive"> Inactive Members ({{user.inactive_member_count}})
+          <input type="radio" name="filter_members" id="show_all"> <a href="/members/">All Members</a> ({{user.all_member_count}})
+          <input type="radio" name="filter_members" id="show_board"> <a href="/members/list_board/">Board Members</a> ({{user.board_member_count}})
+          <input type="radio" name="filter_members" id="show_active"> <a href="/members/list_active/">Active Members</a> ({{user.active_member_count}})
+          <input type="radio" name="filter_members" id="show_inactive"> <a href="/members/list_inactive/">Inactive Members</a> ({{user.inactive_member_count}})
+          <input type="radio" name="filter_members" id="show_needs_review"> <a href="/members/needs_review/">Needs Review</a> ({{user.needs_review_count}})
         </div>
 
         <!-- <form action="{% url 'members_app:search_results' %}" method="POST">
@@ -102,19 +132,23 @@
         let show_board = document.querySelector('#show_board');
         let show_active = document.querySelector('#show_active');
         let show_inactive = document.querySelector('#show_inactive');
-        if (window.location.pathname == '/members/list_board/') {
+        let show_needs_review = document.querySelector('#show_needs_review');
+        if (window.location.pathname == '/members/') {
+          show_all.checked = true;
+        } else if (window.location.pathname == '/members/list_board/') {
           show_board.checked = true;
         } else if (window.location.pathname == '/members/list_active/') {
           show_active.checked = true;
         } else if (window.location.pathname == '/members/list_inactive/') {
           show_inactive.checked = true;
-        } else if (window.location.pathname == '/members/') {
-          show_all.checked = true;
+        } else if (window.location.pathname == '/members/needs_review/') {
+          show_needs_review.checked = true;
         } else {
           show_all.checked = false;
           show_board.checked = false;
           show_active.checked = false;
           show_inactive.checked = false;
+          show_needs_review.checked = false;
         }
         show_all.onclick = function() {
           window.location='/members/';
@@ -127,6 +161,9 @@
         }
         show_inactive.onclick = function() {
           window.location='/members/list_inactive/';
+        }
+        show_needs_review.onclick = function() {
+          window.location='/members/needs_review/';
         }
       </script>
       <script type="text/javascript">

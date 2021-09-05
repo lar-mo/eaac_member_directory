@@ -2,8 +2,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, reverse
 from django.contrib.auth.decorators import login_required
 
+from django.db.models import Q
+from functools import reduce
 from .models import Member
 from .forms import EditMemberInfo
+from itertools import chain
 
 # def index(request):
 #     return HttpResponse("Hello world!")
@@ -63,10 +66,18 @@ def needs_review(request):
 
 @login_required
 def search_results(request):
-    search_term = request.GET['q']
-    members = Member.objects.filter(name1__iregex=r'\b{0}\b'.format(search_term)) | Member.objects.filter(name2__iregex=r'\b{0}\b'.format(search_term))
+    search_terms = request.GET['q'].split()
+    search_terms = list(dict.fromkeys(search_terms))
+    try:
+        search_terms.remove('and')
+    except:
+        pass
+    print(search_terms)
+    members_name1 = Member.objects.filter(reduce(Q.__or__, [Q(name1__icontains=word) for word in search_terms]))
+    members_name2 = Member.objects.filter(reduce(Q.__or__, [Q(name2__icontains=word) for word in search_terms]))
+    members = list(dict.fromkeys(chain(members_name1, members_name2)))
     context = {
-    'members': members,
+        'members': members,
     }
     return render(request, 'members/output.html', context)
 
@@ -82,7 +93,6 @@ def show_member_info(request, member_id):
 
 @login_required
 def edit_member_info(request, member_id):
-    # print(member_id)
     form = EditMemberInfo()
     member = Member.objects.get(id=member_id)
     context = {'member': member, 'form': form}
@@ -108,7 +118,10 @@ def save_member_info(request):
     member_info.phone_number2 = request.POST['phone_number2'].strip()
     member_info.membership_status = request.POST['membership_status']
     member_info.membership_type = request.POST['membership_type']
-    member_info.role = request.POST['role'].strip()
+    try:
+        member_info.role = request.POST['role'].strip()
+    except:
+        pass
     try:
         member_info.directory_optout = request.POST['directory_optout']
     except:

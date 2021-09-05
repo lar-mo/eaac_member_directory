@@ -147,12 +147,17 @@
 
   <script type="text/javascript">
     let needs_review = document.querySelector('#needs_review');
-    needs_review.onclick = function() {
+    needs_review.onclick = function(e) {
       if (needs_review.checked == false && reason_for_review.value != '') {
-        alert("are you sure?");
+        var answer=confirm("Do you want to clear the Reason for Review?");
+        if(answer){
+          reason_for_review.value = '';
+          document.getElementById("#needs_review").checked = false;
+        } else {
+          e.preventDefault();
+        }
       }
       if (needs_review.checked && reason_for_review.value == '') {
-        alert("please enter a reason");
         document.getElementById("reason_for_review").setAttribute("required", true);
       }
       if (needs_review.checked == false) {

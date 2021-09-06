@@ -66,20 +66,50 @@ def needs_review(request):
 
 @login_required
 def search_results(request):
-    search_terms = request.GET['q'].split()
+    querystring = request.GET['q']
+    # querystring = 'asdfasd'
+    two_names_orig = querystring.split("and")
+    # two_names_cleaned = [name for name in two_names if name.strip()]
+    two_names = []
+    for name in two_names_orig:
+        two_names.append(name.strip())
+
+    search_terms = querystring.split()
     search_terms = list(dict.fromkeys(search_terms))
     try:
         search_terms.remove('and')
     except:
         pass
     print(search_terms)
-    members_name1 = Member.objects.filter(reduce(Q.__or__, [Q(name1__icontains=word) for word in search_terms]))
-    members_name2 = Member.objects.filter(reduce(Q.__or__, [Q(name2__icontains=word) for word in search_terms]))
-    members = list(dict.fromkeys(chain(members_name1, members_name2)))
-    context = {
-        'members': members,
-    }
-    return render(request, 'members/output.html', context)
+    print(two_names)
+
+    exact_match = Member.objects.filter(name1=querystring)
+    members_name1 = Member.objects.filter(reduce(Q.__or__, [Q(name1__icontains=word) for word in two_names]))
+    members_name2 = Member.objects.filter(reduce(Q.__or__, [Q(name2__icontains=word) for word in two_names]))
+
+    print(exact_match.exists())
+    print(members_name1.exists())
+    print(members_name2.exists())
+
+    if exact_match.exists():
+        context = {
+            'members': exact_match,
+        }
+        return render(request, 'members/output.html', context)
+    elif members_name1.exists() or members_name2.exists():
+        members = list(dict.fromkeys(chain(members_name1, members_name2)))
+        context = {
+            'members': members,
+        }
+        return render(request, 'members/output.html', context)
+    else:
+        members_name1 = Member.objects.filter(reduce(Q.__or__, [Q(name1__icontains=word) for word in search_terms]))
+        members_name2 = Member.objects.filter(reduce(Q.__or__, [Q(name2__icontains=word) for word in search_terms]))
+        members = list(dict.fromkeys(chain(members_name1, members_name2)))
+        context = {
+            'members': members,
+        }
+        return render(request, 'members/output.html', context)
 
 @login_required
 def show_member_info(request, member_id):

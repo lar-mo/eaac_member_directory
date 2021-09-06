@@ -33,7 +33,7 @@
           </div>
           <div class="col_ro">
             <div class="row">
-              <div class="">{% if member.phone_number1 %}<b>Phone #</b>: {{member.phone_number1}}{% endif %}{% if member.phone_number2 %}, {{member.phone_number2}}{% endif %}</div>
+              <div class="">{% if member.phone_number1 %}<b>Phone</b>: {{member.phone_number1}}{% endif %}{% if member.phone_number2 %}, {{member.phone_number2}}{% endif %}</div>
               <div class="{% if member.membership_status == 'inactive' %}red_label{% endif %}"><b>Status</b>: {{member.membership_status|title}} member</div>
               <div class=""><b>Type</b>: {% if member.membership_type == 'PAM staff'%}{{member.membership_type}}{% else %}{{member.membership_type|title}}{% endif %} {% if member.membership_type == 'Board Member' %}({{member.role|title}}){% endif %}</div>
             </div>

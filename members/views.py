@@ -82,7 +82,6 @@ def needs_review(request):
 @login_required
 def search_results(request):
     querystring = request.GET['q']
-    # querystring = 'asdfasd'
     two_names_orig = querystring.split("and")
     # two_names_cleaned = [name for name in two_names if name.strip()]
     two_names = []

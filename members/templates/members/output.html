@@ -3,6 +3,23 @@
 {% block content %}
 
   <div class="container">
+    <div class="pagination_top" style="background-color: #cde;">
+        <span class="step-links">
+            {% if members.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ members.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ members.number }} of {{ members.paginator.num_pages }}.
+            </span>
+
+            {% if members.has_next %}
+                <a href="?page={{ members.next_page_number }}">next</a>
+                <a href="?page={{ members.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
     {% if message == "changes_saved" %}
       <span class="message">Success! Your changes were saved.</span>
     {% endif %}
@@ -33,9 +50,9 @@
           </div>
           <div class="col_ro">
             <div class="row">
-              <div class="">{% if member.phone_number1 %}<b>Phone</b>: {{member.phone_number1}}{% endif %}{% if member.phone_number2 %}, {{member.phone_number2}}{% endif %}</div>
-              <div class="{% if member.membership_status == 'inactive' %}red_label{% endif %}"><b>Status</b>: {{member.membership_status|title}} member</div>
-              <div class=""><b>Type</b>: {% if member.membership_type == 'PAM staff'%}{{member.membership_type}}{% else %}{{member.membership_type|title}}{% endif %} {% if member.membership_type == 'Board Member' %}({{member.role|title}}){% endif %}</div>
+              <div class="">{% if member.phone_number1 %}{{member.phone_number1}}{% endif %}{% if member.phone_number2 %}, {{member.phone_number2}}{% endif %}</div>
+              <!-- <div class="{% if member.membership_status == 'inactive' %}red_label{% endif %}">{{member.membership_status|title}} member</div> -->
+              <div class="">{% if member.membership_type == 'PAM staff'%}{{member.membership_type}}{% else %}{{member.membership_type|title}}{% endif %} {% if member.membership_type == 'Board Member' %}({{member.role|title}}){% endif %}</div>
             </div>
           </div>
           {% url 'members_app:needs_review' as needs_review_url %}
@@ -44,6 +61,23 @@
           {% endif %}
         </div>
     {% endfor %}
+    <div class="pagination_bottom">
+        <span class="step-links">
+            {% if members.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ members.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ members.number }} of {{ members.paginator.num_pages }}.
+            </span>
+
+            {% if members.has_next %}
+                <a href="?page={{ members.next_page_number }}">next</a>
+                <a href="?page={{ members.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
   </div>
 
 {% endblock %}

@@ -34,6 +34,14 @@
         padding: 10px;
         margin-top: 20px;
       }
+      .pagination_top {
+        border-radius: 10px 10px 0 0;
+        /* text-align: center; */
+      }
+      .pagination_bottom {
+        border-radius: 0 0 10px 10px;
+        text-align: center;
+      }
       .members_list_value {
         border: 1px solid #000;
         padding: 4px;
@@ -161,6 +169,8 @@
       <main>
         {% block content %}{% endblock %}
       </main>
+
+      <p></p><p></p><p></p>
 
       <script type="text/javascript">
         let show_all = document.querySelector('#show_all');

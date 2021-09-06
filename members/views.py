@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, reverse
 from django.contrib.auth.decorators import login_required
-
+from django.core.paginator import Paginator
 from django.db.models import Q
 from functools import reduce
 from .models import Member
@@ -13,9 +13,12 @@ from itertools import chain
 
 @login_required
 def list_all(request):
-    members = Member.objects.all()
+    all_members = Member.objects.all()
+    paginator = Paginator(all_members, 10)
+    page_number = request.GET.get('page')
+    members = paginator.get_page(page_number)
     context = {
-    'members': members,
+        'members': members,
     }
     return render(request, 'members/output.html', context)
 
@@ -23,15 +26,18 @@ def list_all(request):
 def list_all_grid(request):
     members = Member.objects.all()
     context = {
-    'members': members,
+        'members': members,
     }
     return render(request, 'members/grid.html', context)
 
 @login_required
 def list_board(request):
-    members = Member.objects.filter(membership_type='Board Member')
+    board_members = Member.objects.filter(membership_type='Board Member')
+    paginator = Paginator(board_members, 10)
+    page_number = request.GET.get('page')
+    members = paginator.get_page(page_number)
     context = {
-    'members': members,
+        'members': members,
     }
     return render(request, 'members/output.html', context)
 
@@ -39,28 +45,37 @@ def list_board(request):
 def list_active(request):
     # name1.split(' ')[-1]
     # REGEX \b(\w+)$
-    members = Member.objects.filter(membership_status='Active')
+    active_members = Member.objects.filter(membership_status='Active')
     # members = Member.objects.filter(membership_status='active').order_by('name1')
     # members = Member.objects.filter(membership_status='active').extra(select={'lname1' : "SUBSTR(name1, -1 ,)"}).order_by('lname1')
     # print(members)
+    paginator = Paginator(active_members, 10)
+    page_number = request.GET.get('page')
+    members = paginator.get_page(page_number)
     context = {
-    'members': members,
+        'members': members,
     }
     return render(request, 'members/output.html', context)
 
 @login_required
 def list_inactive(request):
-    members = Member.objects.filter(membership_status='Inactive')
+    inactive_members = Member.objects.filter(membership_status='Inactive')
+    paginator = Paginator(inactive_members, 10)
+    page_number = request.GET.get('page')
+    members = paginator.get_page(page_number)
     context = {
-    'members': members,
+        'members': members,
     }
     return render(request, 'members/output.html', context)
 
 @login_required
 def needs_review(request):
-    members = Member.objects.filter(needs_review=1)
+    needs_review = Member.objects.filter(needs_review=1)
+    paginator = Paginator(needs_review, 10)
+    page_number = request.GET.get('page')
+    members = paginator.get_page(page_number)
     context = {
-    'members': members,
+        'members': members,
     }
     return render(request, 'members/output.html', context)
 
@@ -80,16 +95,16 @@ def search_results(request):
         search_terms.remove('and')
     except:
         pass
-    print(search_terms)
-    print(two_names)
+    # print(search_terms)
+    # print(two_names)
 
     exact_match = Member.objects.filter(name1=querystring)
     members_name1 = Member.objects.filter(reduce(Q.__or__, [Q(name1__icontains=word) for word in two_names]))
     members_name2 = Member.objects.filter(reduce(Q.__or__, [Q(name2__icontains=word) for word in two_names]))
 
-    print(exact_match.exists())
-    print(members_name1.exists())
-    print(members_name2.exists())
+    # print(exact_match.exists())
+    # print(members_name1.exists())
+    # print(members_name2.exists())
 
     if exact_match.exists():
         context = {
@@ -116,8 +131,8 @@ def show_member_info(request, member_id):
     message = request.GET.get('message', '')
     member = Member.objects.filter(id=member_id)
     context = {
-    'members': member,
-    'message': message,
+        'members': member,
+        'message': message,
     }
     return render(request, 'members/output.html', context)
 
@@ -125,7 +140,10 @@ def show_member_info(request, member_id):
 def edit_member_info(request, member_id):
     form = EditMemberInfo()
     member = Member.objects.get(id=member_id)
-    context = {'member': member, 'form': form}
+    context = {
+        'member': member,
+        'form': form
+    }
     return render(request, 'members/edit_member_info.html', context)
 
 def save_member_info(request):

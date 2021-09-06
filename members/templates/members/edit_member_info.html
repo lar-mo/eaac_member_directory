@@ -84,7 +84,7 @@
                 </select>
               </div>
               <div class="form_fields">
-                <label for="role">Board Role, if applicable:</label>
+                <label for="role" id="role_label">Board Role, if applicable:</label>
                 <input type="text" id="role" name="role" value="{{member.role}}">
               </div>
               <div class="form_fields">
@@ -135,12 +135,12 @@
     let membership_type = document.querySelector('#membership_type');
     let role = document.querySelector('#role');
     membership_type.onchange = function() {
-      // alert(membership_type.value)
       if (membership_type.value == "Board Member") {
-        document.getElementById("role").removeAttribute("disabled");
-      }
-      else {
-        document.getElementById("role").setAttribute("disabled", true);
+        document.getElementById("role_label").removeAttribute("hidden");
+        document.getElementById("role").style.visibility = "visible";
+      } else {
+        document.getElementById("role_label").setAttribute("hidden", "hidden");
+        document.getElementById("role").style.visibility = "hidden";
       }
     }
   </script>
@@ -171,9 +171,11 @@
     }
     window.onload = function() {
       if (membership_type.value == "Board Member") {
-        document.getElementById("role").removeAttribute("disabled");
+        document.getElementById("role_label").removeAttribute("hidden");
+        document.getElementById("role").style.visibility = "visible";
       } else {
-        document.getElementById("role").setAttribute("disabled", true);
+        document.getElementById("role_label").setAttribute("hidden", "hidden");
+        document.getElementById("role").style.visibility = "hidden";
       }
       if (needs_review.checked) {
         document.getElementById("reason_for_review").setAttribute("required", true);

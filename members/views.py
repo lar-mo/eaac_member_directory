@@ -82,6 +82,10 @@ def needs_review(request):
 @login_required
 def search_results(request):
     querystring = request.GET['q']
+    try:
+        filter = request.GET['f']
+    except:
+        pass
     two_names_orig = querystring.split("and")
     # two_names_cleaned = [name for name in two_names if name.strip()]
     two_names = []
@@ -97,10 +101,21 @@ def search_results(request):
     # print(search_terms)
     # print(two_names)
 
-    exact_match = Member.objects.filter(name1=querystring)
-    members_name1 = Member.objects.filter(reduce(Q.__or__, [Q(name1__icontains=word) for word in two_names]))
-    members_name2 = Member.objects.filter(reduce(Q.__or__, [Q(name2__icontains=word) for word in two_names]))
-
+    member_records = Member.objects.all()
+    try:
+        print("Filter: {}".format(filter))
+        member_records = member_records.filter(membership_type='Board Member')
+    except:
+        pass
+    exact_match = member_records.filter(name1=querystring)
+    members_name1_2n = member_records.filter(reduce(Q.__or__, [Q(name1__istartswith=word) for word in two_names])) # was icontains
+    members_name2_2n = member_records.filter(reduce(Q.__or__, [Q(name2__istartswith=word) for word in two_names])) # was icontains
+    members_name1_swst = member_records.filter(reduce(Q.__or__, [Q(name1__istartswith=word) for word in search_terms])) # was icontains
+    members_name2_swst = member_records.filter(reduce(Q.__or__, [Q(name2__istartswith=word) for word in search_terms])) # was icontains
+    members_name1_ewst = member_records.filter(reduce(Q.__or__, [Q(name1__iendswith=word) for word in search_terms])) # was icontains
+    members_name2_ewst = member_records.filter(reduce(Q.__or__, [Q(name2__iendswith=word) for word in search_terms])) # was icontains
+    members_name1_cst = member_records.filter(reduce(Q.__or__, [Q(name1__icontains=word) for word in search_terms]))
+    members_name2_cst = member_records.filter(reduce(Q.__or__, [Q(name2__icontains=word) for word in search_terms]))
     # print(exact_match.exists())
     # print(members_name1.exists())
     # print(members_name2.exists())
@@ -108,20 +123,45 @@ def search_results(request):
     if exact_match.exists():
         context = {
             'members': exact_match,
+            'querystring': querystring,
+            'view': 'search_page',
+            'match': '1:exact',
         }
         return render(request, 'members/output.html', context)
-    elif members_name1.exists() or members_name2.exists():
-        members = list(dict.fromkeys(chain(members_name1, members_name2)))
+    elif members_name1_2n.exists() or members_name2_2n.exists():
+        members = list(dict.fromkeys(chain(members_name1_2n, members_name2_2n)))
         context = {
             'members': members,
+            'querystring': querystring,
+            'view': 'search_page',
+            'match': '2:pairs',
+        }
+        return render(request, 'members/output.html', context)
+    elif members_name1_swst.exists() or members_name2_swst.exists():
+        members = list(dict.fromkeys(chain(members_name1_swst, members_name2_swst)))
+        context = {
+            'members': members,
+            'querystring': querystring,
+            'view': 'search_page',
+            'match': '2:swst',
+        }
+        return render(request, 'members/output.html', context)
+    elif members_name1_ewst.exists() or members_name2_ewst.exists():
+        members = list(dict.fromkeys(chain(members_name1_ewst, members_name2_ewst)))
+        context = {
+            'members': members,
+            'querystring': querystring,
+            'view': 'search_page',
+            'match': '2:ewst',
         }
         return render(request, 'members/output.html', context)
     else:
-        members_name1 = Member.objects.filter(reduce(Q.__or__, [Q(name1__icontains=word) for word in search_terms]))
-        members_name2 = Member.objects.filter(reduce(Q.__or__, [Q(name2__icontains=word) for word in search_terms]))
-        members = list(dict.fromkeys(chain(members_name1, members_name2)))
+        members = list(dict.fromkeys(chain(members_name1_cst, members_name2_cst)))
         context = {
             'members': members,
+            'querystring': querystring,
+            'view': 'search_page',
+            'match': '3:words',
         }
         return render(request, 'members/output.html', context)
 
@@ -132,6 +172,7 @@ def show_member_info(request, member_id):
     context = {
         'members': member,
         'message': message,
+        'view': 'show_member_info_page',
     }
     return render(request, 'members/output.html', context)
 
@@ -147,7 +188,6 @@ def edit_member_info(request, member_id):
 
 def save_member_info(request):
     member_id = request.POST['member_id']
-    # print(request.POST)
     member_info = Member.objects.get(id=member_id)
     member_info.name1 = request.POST['name1'].strip()
     member_info.sort_by = request.POST['sort_by'].strip()

@@ -29,10 +29,16 @@
         background-color: #fff;
       }
       main {
-        width: 100vw;
+        width: 90vw;
         /* height: 100vw; */
         padding: 10px;
-        margin-top: 20px;
+        margin: 20px auto;
+      }
+      .main_edit {
+        width: 90vw;
+        /* height: 100vw; */
+        padding: 10px;
+        margin: 20px auto;
       }
       .pagination_top {
         border-radius: 10px 10px 0 0;
@@ -113,6 +119,10 @@
         color: blue;
         text-decoration: underline;
       }
+      #clear_reason_lnk {
+        font-size: 0.8em;
+        text-decoration: none;
+      }
       label {
         display: block;
         width: 230px;
@@ -136,10 +146,13 @@
       .submit_btn {
         text-align: center;
       }
+      #filter_cb {
+        margin-left: 5px;
+      }
       .message {
         color: green;
         border-radius: 3px 3px 0 0;
-        margin-left: 5px;
+        margin-left: 10px;
         padding: 2px 4px 2px 4px;
         background-color: #F2F2F2;
         /* z-index: 2; */
@@ -161,16 +174,14 @@
           <input type="radio" name="filter_members" id="show_needs_review"> <a href="/members/needs_review/">Needs Review</a> ({{user.needs_review_count}})
         </div>
 
-          <input type="search" id="q" class="search_box" name="q" placeholder="&nbsp;Search for a Member">
+          <input type="search" id="q" class="search_box" name="q" placeholder="&nbsp;Search for a Member" required>
           <button type="submit" class="" id="search_btn"><b>Search</b></button>
-
+          <input type="checkbox" class="" name="filter_cb" id="filter_cb"/> Show Only Board Members
       </header>
 
       <main>
         {% block content %}{% endblock %}
       </main>
-
-      <p></p><p></p><p></p>
 
       <script type="text/javascript">
         let show_all = document.querySelector('#show_all');
@@ -217,8 +228,17 @@
       <script type="text/javascript">
         search_btn = document.querySelector('#search_btn')
         q = document.querySelector('#q')
-        search_btn.onclick = function() {
-          window.location="{% url 'members_app:search_results' %}?q=" + q.value
+        filter_cb = document.querySelector('#filter_cb')
+        search_btn.onclick = function(event) {
+          if (q.value.trim() == '') {
+            event.preventDefault()
+          } else {
+            if (filter_cb.checked) {
+              window.location="{% url 'members_app:search_results' %}?q=" + q.value + "&f=board_only"
+            } else {
+              window.location="{% url 'members_app:search_results' %}?q=" + q.value
+            }
+          }
         }
         q.addEventListener("keydown", function (event) { // listen for  key presses
             if (event.keyCode === 13) {                                 // '13' is the Enter/Return key

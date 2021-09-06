@@ -96,8 +96,8 @@
                 <input type="checkbox" id="needs_review" name="needs_review" {% if member.needs_review %}checked{% endif %} value="{{member.needs_review}}" style="width: auto;">
               </div>
               <div class="form_fields">
-                <label for="reason_for_review">Reason for Review:</label>
-                <input type="text" id="reason_for_review" name="reason_for_review" value="{{member.reason_for_review|title}}"> <a href="#" id="clear_reason_lnk">clear</a>
+                <label for="reason_for_review">Reason for Review: <a href="#" id="clear_reason_lnk">[clear]</a></label>
+                <input type="text" id="reason_for_review" name="reason_for_review" value="{{member.reason_for_review|title}}">
               </div>
             </div>
             <hr>

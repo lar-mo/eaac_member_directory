@@ -5,7 +5,6 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from functools import reduce
 from .models import Member
-from .forms import EditMemberInfo
 from itertools import chain
 
 # def index(request):
@@ -186,11 +185,9 @@ def show_member_info(request, member_id):
 
 @login_required
 def edit_member_info(request, member_id):
-    form = EditMemberInfo()
     member = Member.objects.get(id=member_id)
     context = {
         'member': member,
-        'form': form
     }
     return render(request, 'members/edit_member_info.html', context)
 

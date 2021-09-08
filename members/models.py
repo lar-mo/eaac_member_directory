@@ -7,7 +7,7 @@ def all_member_count(user):
 User.add_to_class('all_member_count', all_member_count)
 
 def board_member_count(user):
-    number_of_board_members = Member.objects.filter(membership_type='Board Member').count()
+    number_of_board_members = Member.objects.filter(board_member=True).count()
     return number_of_board_members
 User.add_to_class('board_member_count', board_member_count)
 
@@ -54,17 +54,18 @@ class Member(models.Model):
         blank=True,
     )
     SUPPORTER = 'Supporter'
-    VOLUNTEER = 'Volunteer'
+    CONTRIBUTOR = 'Contributor'
+    ADVOCATE = 'Advocate'
     HONORARY = 'Honorary'
     PAM_STAFF = 'PAM staff'
-    BOARD = 'Board Member'
     MEMBER_TYPE_CHOICES = [
         (SUPPORTER, 'Supporter'),
-        (VOLUNTEER, 'Volunteer'),
+        (CONTRIBUTOR, 'Contributor'),
+        (ADVOCATE, 'Advocate'),
         (HONORARY, 'Honorary'),
         (PAM_STAFF, 'PAM staff'),
-        (BOARD, 'Board Member'),
     ]
+    board_member = models.BooleanField(default=False)
     membership_type = models.CharField(
         max_length=20,
         choices=MEMBER_TYPE_CHOICES,

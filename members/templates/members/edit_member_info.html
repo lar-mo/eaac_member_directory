@@ -10,7 +10,7 @@
           <div class="col_rw">
             <div class="row">
               <div class="form_fields">
-                <label for="name1">Name 1:</label>
+                <label for="name1">Name 1: {{member.sort_by}}</label>
                 <input type="text" id="name1" name="name1" value="{{member.name1}}" required>
                 <input type="hidden" id="sort_by" name="sort_by" value="{{member.sort_by}}">
               </div>
@@ -77,27 +77,31 @@
                 <label for="membership_type">Member Type:</label>
                 <select id="membership_type" name="membership_type">
                   <option value="Supporter" {% if member.membership_type|lower == 'supporter' %} selected {%endif%}>Supporter</option>
-                  <option value="Volunteer" {% if member.membership_type|lower == 'volunteer' %} selected {%endif%}>Volunteer</option>
+                  <option value="Contributor" {% if member.membership_type|lower == 'contributor' %} selected {%endif%}>Contributor</option>
+                  <option value="Advocate" {% if member.membership_type|lower == 'advocate' %} selected {%endif%}>Advocate</option>
                   <option value="Honorary" {% if member.membership_type|lower == 'honorary' %} selected {%endif%}>Honorary</option>
                   <option value="PAM staff" {% if member.membership_type|lower == 'pam staff' %} selected {%endif%}>PAM staff</option>
-                  <option value="Board Member" {% if member.membership_type|lower == 'board member' %} selected {%endif%}>Board Member</option>
                 </select>
               </div>
               <div class="form_fields">
-                <label for="role" id="role_label">Board Role, if applicable:</label>
-                <input type="text" id="role" name="role" value="{{member.role}}">
+                <label for="board_member">Board Member:</label>
+                <input type="checkbox" id="board_member" name="board_member" style="width: auto;" {% if member.board_member %}checked{% endif %}>
+              </div>
+              <div class="form_fields">
+                <label for="role" id="role_label" {% if member.board_member %}style="visibility:visible"{% endif %}>Role & Commitees:</label>
+                <input type="text" id="role" name="role" value="{{member.role}}" {% if member.board_member %}style="visibility:visible"{% endif %}>
               </div>
               <div class="form_fields">
                 <label for="directory_optout">Directory Opt-out:</label>
-                <input type="checkbox" id="directory_optout" name="directory_optout" {% if member.directory_optout %}checked{% endif %} value="{{member.directory_optout}}" style="width: auto;">
+                <input type="checkbox" id="directory_optout" name="directory_optout" style="width: auto;" {% if member.directory_optout %}checked{% endif %}>
               </div>
               <div class="form_fields">
                 <label for="needs_review">Needs Review:</label>
-                <input type="checkbox" id="needs_review" name="needs_review" {% if member.needs_review %}checked{% endif %} value="{{member.needs_review}}" style="width: auto;">
+                <input type="checkbox" id="needs_review" name="needs_review" style="width: auto;" {% if member.needs_review %}checked{% endif %}>
               </div>
               <div class="form_fields">
-                <label for="reason_for_review">Reason for Review: <a href="#" id="clear_reason_lnk">[clear]</a></label>
-                <input type="text" id="reason_for_review" name="reason_for_review" value="{{member.reason_for_review|title}}">
+                <label for="reason_for_review" id="reason_for_review_label" {% if member.needs_review %}style="visibility:visible"{% endif %}>Reason for Review: <a href="#" id="clear_reason_lnk">[clear]</a></label>
+                <input type="text" id="reason_for_review" name="reason_for_review" value="{{member.reason_for_review}}" {% if member.needs_review %}style="visibility:visible"{% endif %}>
               </div>
             </div>
             <hr>
@@ -112,17 +116,6 @@
   </div> <!-- end of 'container' -->
 
   <script type="text/javascript">
-    save_changes_btn = document.querySelector('#save_changes_btn')
-    q = document.querySelector('#q')
-    search_btn.onclick = function() {
-      window.location="{% url 'members_app:save_member_info' %}"
-    }
-    // q.addEventListener("keydown", function (event) { // listen for  key presses
-    //     if (event.keyCode === 13) {                                 // '13' is the Enter/Return key
-    //         search_btn.click()                                      // emulate button click
-    //     }
-    // })
-
     let clear_reason_lnk = document.querySelector('#clear_reason_lnk');
     let reason_for_review = document.querySelector('#reason_for_review');
     clear_reason_lnk.onclick = function (event) {
@@ -132,54 +125,64 @@
   </script>
 
   <script type="text/javascript">
-    let membership_type = document.querySelector('#membership_type');
+    let board_member = document.querySelector('#board_member');
     let role = document.querySelector('#role');
-    membership_type.onchange = function() {
-      if (membership_type.value == "Board Member") {
-        document.getElementById("role_label").removeAttribute("hidden");
+    board_member.onclick = function() {
+      if (board_member.checked) {
+        document.getElementById("role_label").style.visibility = "visible";
         document.getElementById("role").style.visibility = "visible";
+        document.getElementById("role").setAttribute("required", true);
       } else {
-        document.getElementById("role_label").setAttribute("hidden", "hidden");
+        document.getElementById("role_label").style.visibility = "hidden";
         document.getElementById("role").style.visibility = "hidden";
+        document.getElementById("role").removeAttribute("required");
+      }
+    }
+
+    let needs_review = document.querySelector('#needs_review');
+    needs_review.onclick = function(e) {
+      if (needs_review.checked) {
+        document.getElementById("reason_for_review_label").style.visibility = "visible";
+        document.getElementById("reason_for_review").style.visibility = "visible";
+        document.getElementById("reason_for_review").setAttribute("required", true);
+      } else {
+        if (reason_for_review.value != '') {
+          var answer=confirm("Do you want to clear the Reason for Review?");
+          if(answer){
+            reason_for_review.value = '';
+            document.getElementById("reason_for_review_label").style.visibility = "hidden";
+            document.getElementById("reason_for_review").style.visibility = "hidden";
+            document.getElementById("reason_for_review").removeAttribute("required");
+          } else {
+            e.preventDefault();
+          }
+        } else {
+          document.getElementById("reason_for_review_label").style.visibility = "hidden";
+          document.getElementById("reason_for_review").style.visibility = "hidden";
+          document.getElementById("reason_for_review").removeAttribute("required");
+        }
       }
     }
   </script>
 
   <script type="text/javascript">
-    let needs_review = document.querySelector('#needs_review');
-    needs_review.onclick = function(e) {
-      if (needs_review.checked == false && reason_for_review.value != '') {
-        var answer=confirm("Do you want to clear the Reason for Review?");
-        if(answer){
-          reason_for_review.value = '';
-          document.getElementById("#needs_review").checked = false;
-        } else {
-          e.preventDefault();
-        }
-      }
-      if (needs_review.checked && reason_for_review.value == '') {
-        document.getElementById("reason_for_review").setAttribute("required", true);
-      }
-      if (needs_review.checked == false) {
-        document.getElementById("reason_for_review").removeAttribute("required");
-      }
-    }
     let name1 = document.querySelector('#name1');
     name1.onchange = function() {
       let lname1 = name1.value.split(' ').pop();
       sort_by.value = lname1;
     }
+  </script>
+
+  <script type="text/javascript">
     window.onload = function() {
-      if (membership_type.value == "Board Member") {
-        document.getElementById("role_label").removeAttribute("hidden");
-        document.getElementById("role").style.visibility = "visible";
+      if (board_member.checked) {
+        document.getElementById("role").setAttribute("required", true);
       } else {
-        document.getElementById("role_label").setAttribute("hidden", "hidden");
-        document.getElementById("role").style.visibility = "hidden";
+        document.getElementById("role").removeAttribute("required");
       }
       if (needs_review.checked) {
         document.getElementById("reason_for_review").setAttribute("required", true);
-      } else if (needs_review.checked == false) {
+      } else {
         document.getElementById("reason_for_review").removeAttribute("required");
       }
       let lname1 = "{{member.name1}}".split(' ').pop();

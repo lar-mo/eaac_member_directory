@@ -20,7 +20,14 @@
             {% endif %}
         </span>
     </div>
-      {% for member in members %}
+    {% if executive %}
+    <div class="execs">
+        {% for key, value in executive.items %}
+            <b>{{ key|title }}</b>: {{ value }}<br>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% for member in members %}
         <div class="tile">
           {% url 'members_app:needs_review' as needs_review_url %}
           {% if request.path == needs_review_url %}
@@ -49,7 +56,8 @@
             <div class="row">
               <div class="">{% if member.phone_number1 %}{{member.phone_number1}}{% endif %}{% if member.phone_number2 %}, {{member.phone_number2}}{% endif %}</div>
               <!-- <div class="{% if member.membership_status == 'inactive' %}red_label{% endif %}">{{member.membership_status|title}} member</div> -->
-              <div class="">{% if member.membership_type == 'PAM staff'%}{{member.membership_type}}{% else %}{{member.membership_type|title}}{% endif %} {% if member.membership_type == 'Board Member' %}({{member.role|title}}){% endif %}</div>
+              <div class="">{% if member.membership_type == 'PAM staff'%}{{member.membership_type}}{% else %}{{member.membership_type|title}}{% endif %}</div>
+              <div>{% if member.board_member == True %}Board Member ({{member.role|title}}){% endif %}</div>
             </div>
           </div>
           {% url 'members_app:needs_review' as needs_review_url %}

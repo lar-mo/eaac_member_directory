@@ -32,11 +32,19 @@ def list_all_grid(request):
 
 @login_required
 def list_board(request):
-    board_members = Member.objects.filter(membership_type='Board Member')
+    board_members = Member.objects.filter(board_member=True)
+    executive = {
+        'president': 'Jan Schollenberger',
+        'vice president': 'David Barnard',
+        'secretary': 'Pam Berg',
+        'treasurer': 'Craig Siegel',
+        'past president': 'Mary Radtke Klein'
+    }
     paginator = Paginator(board_members, 10)
     page_number = request.GET.get('page')
     members = paginator.get_page(page_number)
     context = {
+        # 'executive': executive,
         'members': members,
     }
     return render(request, 'members/output.html', context)
@@ -104,7 +112,7 @@ def search_results(request):
     member_records = Member.objects.all()
     try:
         print("Filter: {}".format(filter))
-        member_records = member_records.filter(membership_type='Board Member')
+        member_records = member_records.filter(board_member=True)
     except:
         pass
     exact_match = member_records.filter(name1=querystring)
@@ -205,18 +213,30 @@ def save_member_info(request):
     member_info.phone_number2 = request.POST['phone_number2'].strip()
     member_info.membership_status = request.POST['membership_status']
     member_info.membership_type = request.POST['membership_type']
+
     try:
-        member_info.role = request.POST['role'].strip()
+        board_member = request.POST['board_member']
+        if board_member == 'on':
+            member_info.board_member = True
     except:
-        pass
+        member_info.board_member = False
+
+    member_info.role = request.POST['role'].strip()
+
     try:
-        member_info.directory_optout = request.POST['directory_optout']
+        directory_optout = request.POST['directory_optout']
+        if directory_optout == 'on':
+            member_info.directory_optout = True
     except:
-        pass
+        member_info.directory_optout = False
+
     try:
-        member_info.needs_review = request.POST['needs_review']
+        needs_review = request.POST['needs_review']
+        if needs_review == 'on':
+            member_info.needs_review = True
     except:
-        pass
+        member_info.needs_review = False
+
     member_info.reason_for_review = request.POST['reason_for_review'].strip()
     member_info.save()
 
